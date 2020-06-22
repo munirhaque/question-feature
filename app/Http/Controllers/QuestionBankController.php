@@ -11,6 +11,7 @@ use App\Models\ClassSubject;
 use App\Models\Topic;
 use App\Models\Question;
 use App\Models\QuestionBankQuestion;
+use App\Models\ClassQuestion;
 use App\Http\Requests\StoreQuestionBankRequest;
 use App\Http\Requests\StoreQuestionBankQuestionRequest;
 
@@ -24,10 +25,11 @@ class QuestionBankController extends Controller
     protected $topics;
     protected $questions;
     protected $question_bank_questions;
+    protected $class_questions;
 
     public function __construct(QuestionBank $question_bank, ClassList $class, Subject $subject,
                                 ClassSubject $class_subject, Chapter $chapter, Topic $topic,
-                                Question $question,QuestionBankQuestion $question_bank_question){
+                                Question $question,QuestionBankQuestion $question_bank_question, ClassQuestion $class_question){
         $this->middleware('auth');
         $this->question_banks = $question_bank;
         $this->classes = $class;
@@ -37,6 +39,7 @@ class QuestionBankController extends Controller
         $this->topics = $topic;
         $this->questions = $question;
         $this->question_bank_questions = $question_bank_question;
+        $this->class_questions = $class_question;
     }
 
     public function index(){
@@ -58,7 +61,7 @@ class QuestionBankController extends Controller
 
     public function store(StoreQuestionBankRequest $request){
         $question_bank = $this->question_banks;
-        $question_bank->class_id = $request->class;
+       // $question_bank->class_id = $request->class;
         $question_bank->title = $request->title;
         $question_bank->number_of_question = $request->number_of_question;
         $question_bank->duration = $request->duration;
@@ -70,8 +73,9 @@ class QuestionBankController extends Controller
         $question_bank = $this->question_banks->find($id);
         $class_subjects = $this->class_subjects->where('class_id',$question_bank->class_id)->get();
        // $question_bank_questions = $this->question_bank_questions->where('question_bank_id', $id)->get();
-        //$question_bank_questions = $this->question_bank_questions->where('question_bank_id', $id)->get();
-        return view('question-banks.manage', compact('question_bank', 'class_subjects','question_bank_questions'));
+        $question_bank_questions = $this->question_bank_questions->where('question_bank_id', $id)->get();
+        $classes = $this->classes->get();
+        return view('question-banks.manage', compact('question_bank', 'class_subjects','question_bank_questions','classes'));
     }
 
     public function getChapter($subject_id){
@@ -87,10 +91,23 @@ class QuestionBankController extends Controller
     }
 
     public function countQuestion($topic_id){
-        $number_of_question = $this->questions->where('topic_id',$topic_id)->get()->count();
+        $number_of_question = $this->class_questions->where('topic_id',$topic_id)->get()->count();
         return response()->json($number_of_question);
         // return $chapters;
     }
+
+    public function countQuestionByClass($class_id){
+        $number_of_question = $this->class_questions->where('class_id',$class_id)->get()->count();
+        return response()->json($number_of_question);
+        // return $chapters;
+    }
+
+    public function countQuestionBySubject($subject_id){
+        $number_of_question = $this->class_questions->where('subject_id',$subject_id)->get()->count();
+        return response()->json($number_of_question);
+        // return $chapters;
+    }
+
 
     public function setQuestion(StoreQuestionBankQuestionRequest $request, $question_bank_id){
         $number_of_questions = $request->question;
@@ -124,6 +141,12 @@ class QuestionBankController extends Controller
             }
             return redirect(route('questions-banks.manage',$question_bank_id))->with('success',['Success'=>'Questions Added to Question Bank']);
         }
+
+    }
+
+    public function question_list($id){
+        $questions = $this->question_bank_questions->where('question_bank_id', $id)->get();
+        return view('question-banks.question-list',compact('questions'));
 
     }
 

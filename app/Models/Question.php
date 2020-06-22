@@ -25,4 +25,8 @@ class Question extends Model
         return $this->belongsTo(Topic::class);
     }
 
+    public function option(){
+        return $this->hasMany(Option::class);
+    }
+
 }

@@ -13,6 +13,7 @@
             <div class="form-group">
                 <label>Chapter:</label>
                 <select name="chapter" id="chapter" class="col-md-10 form-control">
+                    <option>--Select Chapter--</option>
                     @foreach($chapters as $chapter)
                         <option value="{{$chapter->id}}">{{$chapter->title}}</option>
                     @endforeach
@@ -22,9 +23,6 @@
                 <label>Topic:</label>
                 <select name="topic" id="topic" class="col-md-10 form-control">
                     <option>--- Select Topic ---</option>
-                    {{--@foreach($topics as $topic)
-                        <option value="{{$topic->id}}">{{$topic->title}}</option>
-                    @endforeach--}}
                 </select>
             </div>
             <div class="form-group">
@@ -68,6 +66,7 @@
 
 
                     if(data.length == 0){
+                        $("#topic").empty();
                         $("#topic").append('<option>--No Topic Available--</option>');
                     }else{
                         $("#topic").empty();

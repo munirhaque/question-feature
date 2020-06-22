@@ -31,6 +31,8 @@ Route::get('/questions/details/{id}', 'QuestionController@details')->name('quest
 Route::delete('/questions/delete', 'QuestionController@destroy')->name('questions.delete');
 
 Route::post('/questions/save_upload', 'QuestionController@save_upload')->name('questions.save_upload');
+Route::get('/questions/question-manage/{id}', 'QuestionController@question_manage')->name('questions.question-manage');
+Route::post('/questions/add-question-to-class/{id}', 'QuestionController@add_question_to_class')->name('questions.add-question-to-class');
 
 
 Route::get('/questions-banks/', 'QuestionBankController@index')->name('questions-banks.index');
@@ -39,7 +41,11 @@ Route::get('/questions-banks/manage/{id}', 'QuestionBankController@manage')->nam
 Route::get('/questions-banks/chapter/{id}', 'QuestionBankController@getChapter')->name('questions-banks.chapter');
 Route::get('/questions-banks/topic/{id}', 'QuestionBankController@getTopic')->name('questions-banks.topic');
 Route::get('/questions-banks/number_of_question/{id}', 'QuestionBankController@countQuestion')->name('questions-banks.number_of_question');
+Route::get('/questions-banks/number_of_question/subject/{id}', 'QuestionBankController@countQuestionBySubject')->name('questions-banks.number-of-class-question');
+Route::get('/questions-banks/number_of_question/class/{id}', 'QuestionBankController@countQuestionBySubject')->name('questions-banks.number-of-class-question');
+
 Route::post('/questions-banks/set-question/{id}', 'QuestionBankController@setQuestion')->name('questions-banks.set-question');
+Route::get('/questions-banks/questions/{id}', 'QuestionBankController@question_list')->name('questions-banks.questions');
 
 
 

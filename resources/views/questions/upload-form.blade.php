@@ -1,7 +1,6 @@
 @extends('layouts.master')
 @section('section-title')
     ADD QUESTION
-    <button id="btn-add-option" class="btn btn-info float-right"><span><i class="fas fa-plus-square"></i></span> ADD OPTION</button>
 @endsection
 @section('main-content')
     @include('layouts.partials.errors')
@@ -9,7 +8,8 @@
     <div id="question-form">
         <div class="form-group">
             <label>Select Chapter:</label>
-            <select name="chapter" class="form-control">
+            <select name="chapter" id="chapter" class="form-control">
+                <option>-- Select Chapter--</option>
                 @foreach($chapters as $chapter)
                     <option value="{{$chapter->id}}">{{$chapter->serial_no}}:{{$chapter->title}}</option>
                 @endforeach
@@ -17,10 +17,10 @@
         </div>
         <div class="form-group">
             <label>Select Topic:</label>
-            <select name="topic" class="form-control">
-                @foreach($topics as $topic)
+            <select name="topic" id="topic" class="form-control">
+                {{--@foreach($topics as $topic)
                     <option value="{{$topic->id}}">{{$topic->title}}</option>
-                @endforeach
+                @endforeach--}}
             </select>
         </div>
         <div class="form-group">
@@ -38,4 +38,35 @@
     {!! Form::close() !!}
 @endsection
 
+@section('extra-scripts')
+<script>
+    $(document).ready( function () {
+        $("#chapter").change(function(){
+            let chapter_id = $('#chapter').val();
+            $.ajax({
+                url:'/questions-banks/topic/'+chapter_id,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
 
+
+                    if(data.length == 0){
+                        $("#topic").empty();
+                        $("#topic").append('<option>--No Topic Available--</option>');
+                    }else{
+                        $("#topic").empty();
+                        $("#topic").append('<option>--- Select Topic ---</option>');
+                        for(let count=0; count < data.length; count++){
+                            $("#topic").append('<option value="'+data[count].id+'">'+ data[count].title+'</option>');
+                        }
+                    }
+                },
+                error:function(){
+                    $("#topic").append('<option>--Please Select Topic</option>');
+                }
+            });
+        });
+    })
+
+</script>
+@endsection

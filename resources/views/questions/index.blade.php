@@ -8,6 +8,7 @@
             {!! Form::open(['route'=>'questions.manage', 'method'=>'get']) !!}
             <label>Select Class</label>
             <select name="class" id="class" class="form-control">
+                <option>--Select Class--</option>
                 @foreach($classes as $class)
                     <option value="{{$class->id}}">{{$class->name}}</option>
                 @endforeach
@@ -19,9 +20,9 @@
             <label>Select Subject</label>
             <select name="subject" id="subject" class="form-control">
 
-                @foreach($subjects as $subject)
+                {{--@foreach($subjects as $subject)
                     <option value="{{$subject->id}}">{{$subject->title}}</option>
-                @endforeach
+                @endforeach--}}
             </select>
         </div>
     </div>
@@ -38,7 +39,7 @@
 
 @section('extra-scripts')
 <script>
-   /* $("#class").change(function(){
+    $("#class").change(function(){
         let class_id = $('#class').val();
         $.ajax({
             url:'/questions/get_subject/'+class_id,
@@ -46,16 +47,14 @@
             dataType: 'json',
 
             success: function (data) {
-                  alert(data[0].title);
-
-
                 if(data.length == 0){
+                    $("#subject").empty();
                     $("#subject").append('<option>--No Chapter Available--</option>');
                 }else{
                     $("#subject").empty();
                     $("#subject").append('<option>--- Select Chapter ---</option>');
                     for(let count=0; count < data.length; count++){
-                        $("#subject").append('<option value="'+data[count].id+'">'+ data[count].title+'</option>');
+                        $("#subject").append('<option value="'+data[count].subject_id+'">'+ data[count].subject.title+'</option>');
                     }
                 }
             },
@@ -64,6 +63,6 @@
             }
 
         });
-    })*/
+    })
 </script>
 @endsection

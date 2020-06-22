@@ -13,6 +13,7 @@
             <th>Number of Question</th>
             <th>Duration</th>
             <th>Manage</th>
+            <th>Question List</th>
             <th>Delete</th>
         </tr>
         </thead>
@@ -27,6 +28,10 @@
                         <span><i class="fas fa-cogs"></i></span> MANAGE
                     </a>
                 </td>
+                <td><a href="{{route('questions-banks.questions',$question_bank->id)}}" class="btn btn-primary">
+                        <span><i class="fas fa-file-alt"></i></span> Question List
+                    </a>
+                </td>
                 <td><a href="#" class="btn btn-danger delete-question" data-toggle="modal" data-target="#delete_question_modal" data-id="#"><span><i class="fas fa-trash-alt"></i></span> DELETE</a></td>
             </tr>
         @endforeach
@@ -38,6 +43,7 @@
             <th>Number of Question</th>
             <th>Duration</th>
             <th>Manage</th>
+            <th>Question List</th>
             <th>Delete</th>
         </tr>
         </tfoot>

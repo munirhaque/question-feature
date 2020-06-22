@@ -12,6 +12,7 @@ QUESTIONS MANAGEMENT - Subject: {{$subject_info->title}}
             <th>Question</th>
             <th>Chapter</th>
             <th>Topic</th>
+            <th>Details</th>
             <th>Manage</th>
             <th>Delete</th>
         </tr>
@@ -20,11 +21,15 @@ QUESTIONS MANAGEMENT - Subject: {{$subject_info->title}}
         @foreach($questions as $question)
             <tr>
                 <td>{{$loop->iteration}} </td>
-                <td>{{$question->title}}</td>
+                <td>{{$question->question->title}}</td>
                 <td>{{$question->chapter->title}}</td>
                 <td>{{$question->topic->title}}</td>
-                <td><a href="{{route('questions.details', $question->id)}}" class="btn btn-primary">
+                <td><a href="{{route('questions.details', $question->question_id)}}" class="btn btn-primary">
                         <span><i class="fas fa-file-alt"></i></span> DETAILS
+                    </a>
+                </td>
+                <td><a href="{{route('questions.question-manage', $question->question_id)}}" class="btn btn-primary">
+                        <span><i class="fas fa-cogs"></i></span> Manage
                     </a>
                 </td>
                 <td><a href="#" class="btn btn-danger delete-question" data-toggle="modal" data-target="#delete_question_modal" data-id="{{$question->id}}"><span><i class="fas fa-trash-alt"></i></span> DELETE</a></td>
@@ -37,6 +42,7 @@ QUESTIONS MANAGEMENT - Subject: {{$subject_info->title}}
             <th>Question</th>
             <th>Chapter</th>
             <th>Topic</th>
+            <th>Details</th>
             <th>Manage</th>
             <th>Delete</th>
         </tr>
