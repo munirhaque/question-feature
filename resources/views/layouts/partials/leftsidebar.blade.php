@@ -41,6 +41,12 @@
                         Question Bank
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{route('exams.index')}}" class="nav-link">
+                        <span><i class="fas fa-book"></i></span>
+                        Exams
+                    </a>
+                </li>
             </ul>
         </nav>
       <!-- /.sidebar-menu -->

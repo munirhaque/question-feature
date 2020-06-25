@@ -28,6 +28,7 @@ class StoreQuestionBankQuestionRequest extends FormRequest
             'chapter'=>'required',
             'topic'=>'required',
             'question'=>'required',
+            'answer_type'=>'required',
         ];
     }
 }

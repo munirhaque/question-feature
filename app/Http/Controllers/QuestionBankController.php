@@ -12,6 +12,7 @@ use App\Models\Topic;
 use App\Models\Question;
 use App\Models\QuestionBankQuestion;
 use App\Models\ClassQuestion;
+use App\Models\Option;
 use App\Http\Requests\StoreQuestionBankRequest;
 use App\Http\Requests\StoreQuestionBankQuestionRequest;
 
@@ -26,10 +27,12 @@ class QuestionBankController extends Controller
     protected $questions;
     protected $question_bank_questions;
     protected $class_questions;
+    protected $options;
 
     public function __construct(QuestionBank $question_bank, ClassList $class, Subject $subject,
                                 ClassSubject $class_subject, Chapter $chapter, Topic $topic,
-                                Question $question,QuestionBankQuestion $question_bank_question, ClassQuestion $class_question){
+                                Question $question,QuestionBankQuestion $question_bank_question,
+                                ClassQuestion $class_question, Option $option){
         $this->middleware('auth');
         $this->question_banks = $question_bank;
         $this->classes = $class;
@@ -40,6 +43,7 @@ class QuestionBankController extends Controller
         $this->questions = $question;
         $this->question_bank_questions = $question_bank_question;
         $this->class_questions = $class_question;
+        $this->options = $option;
     }
 
     public function index(){
@@ -92,7 +96,32 @@ class QuestionBankController extends Controller
 
     public function countQuestion($topic_id){
         $number_of_question = $this->class_questions->where('topic_id',$topic_id)->get()->count();
-        return response()->json($number_of_question);
+        $count_has_one_answer = 0;
+        $count_has_no_answer = 0;
+        $count_has_multiple_answer = 0;
+
+        $count_answer = [];
+        $questions = $this->class_questions->where('topic_id',$topic_id)->get();
+        foreach ($questions as $question){
+
+            $count_answer = $this->options->where('question_id',$question->question_id)->where('is_answer',1)->get()->count();
+            /*foreach ($options as $option){
+                if ($option->is_answer == 1){
+                    $count_answer = $count_answer + 1;
+                }
+            }*/
+            if ($count_answer == 1){
+                $count_has_one_answer = $count_has_one_answer + 1;
+            }elseif ($count_answer > 1){
+                $count_has_multiple_answer = $count_has_multiple_answer + 1;
+            }else{
+                $count_has_no_answer = $count_has_no_answer + 1;
+            }
+            //return response()->json($count_answer);
+        }
+
+
+        return response()->json([$number_of_question,$count_has_no_answer,$count_has_one_answer, $count_has_multiple_answer]);
         // return $chapters;
     }
 
@@ -110,12 +139,48 @@ class QuestionBankController extends Controller
 
 
     public function setQuestion(StoreQuestionBankQuestionRequest $request, $question_bank_id){
+        $questions = [];
         $number_of_questions = $request->question;
         $subject_id = $request->subject;
         $chapter_id = $request->chapter;
         $topic_id = $request->topic;
+        $answer_type = $request->answer_type;
         $question_bank =$this->question_banks->find($question_bank_id);
-        $questions = $this->questions->where('subject_id',$subject_id)->where('chapter_id',$chapter_id)->where('topic_id',$topic_id)->pluck('id')->toArray() ;
+        //return $answer_type;
+        if($answer_type === "any"){
+            $questions = $this->class_questions->where('topic_id',$topic_id)->pluck('question_id')->toArray();
+            //return $questions;
+        }elseif ($answer_type === "has_no_answer"){
+            //$count_answer = [];
+            $allquestions = $this->class_questions->where('topic_id',$topic_id)->get();
+            foreach ($allquestions as $question){
+                $count_answer = $this->options->where('question_id',$question->question_id)->where('is_answer',1)->get()->count();
+                if ($count_answer == 0){
+                    array_push($questions,$question->question_id );
+                }
+            }
+            //return $questions;
+        }elseif ($answer_type === "has_one_answer"){
+            $allquestions = $this->class_questions->where('topic_id',$topic_id)->get();
+            foreach ($allquestions as $question){
+                $count_answer = $this->options->where('question_id',$question->question_id)->where('is_answer',1)->get()->count();
+                if ($count_answer == 1){
+                    array_push($questions,$question->question_id );
+                }
+            }
+            //return $questions;
+        }elseif ($answer_type === "has_multiple_answer"){
+            $allquestions = $this->class_questions->where('topic_id',$topic_id)->get();
+            foreach ($allquestions as $question){
+                $count_answer = $this->options->where('question_id',$question->question_id)->where('is_answer',1)->get()->count();
+                if ($count_answer > 1){
+                    array_push($questions,$question->question_id );
+                }
+            }
+            //return $questions;
+        }
+
+
         $question_bank_questions = $this->question_bank_questions->where('question_bank_id',$question_bank_id)->pluck('question_id')->toArray();
         if(($question_bank->number_of_question - count($question_bank_questions)) ===0){
             return redirect(route('questions-banks.manage',$question_bank_id))->with('error',['Error'=>'Question Bank Limit Exceed']);

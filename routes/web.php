@@ -46,9 +46,17 @@ Route::get('/questions-banks/number_of_question/class/{id}', 'QuestionBankContro
 
 Route::post('/questions-banks/set-question/{id}', 'QuestionBankController@setQuestion')->name('questions-banks.set-question');
 Route::get('/questions-banks/questions/{id}', 'QuestionBankController@question_list')->name('questions-banks.questions');
-
-
-
 Route::post('/questions-banks/save', 'QuestionBankController@store')->name('questions-banks.save');
+
+Route::get('/exams/','ExamsController@index')->name('exams.index');
+Route::get('/exams/new','ExamsController@create')->name('exams.new');
+Route::post('/exams/save','ExamsController@store')->name('exams.save');
+Route::get('/exams/edit/{id}','ExamsController@edit')->name('exams.edit');
+Route::put('/exams/update/{id}','ExamsController@update')->name('exams.update');
+Route::delete('/exams/remove/','ExamsController@destroy')->name('exams.remove');
+Route::get('/exams/manage/{id}','ExamsController@manage')->name('exams.manage');
+Route::post('/exams/set-question/{id}','ExamsController@setQuestion')->name('exams.set-question');
+Route::get('/exams/questions/{id}', 'ExamsController@question_list')->name('exams.questions');
+
 
 

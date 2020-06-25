@@ -4,13 +4,16 @@
 @endsection
 @section('main-content')
     @include('layouts.partials.alerts')
-    <b>Question Bank Title: {{$question_bank->title}}</b>
-    <div class="float-right"><a href="{{route('questions-banks.questions',$question_bank->id)}}" class="btn btn-primary"><span><i class="fas fa-file-alt"></i></span>Question List</a></div>
+    <b>Exam Title: {{$exam->exam_name}}</b>
+    <div class="float-right"><a href="{{route('exams.questions',$exam->id)}}" class="btn btn-primary"><span><i class="fas fa-file-alt"></i></span>Question List</a></div>
     <br/>
-    <b>Question Limit:</b> {{$question_bank->number_of_question}}
+    <b>Exam Question Limit:</b> {{$exam->number_of_question}}
     <br/>
-    <b>Question Contain:</b>{{$question_bank->question->count()}}
-    {!! Form::open(['route'=>['questions-banks.set-question',$question_bank->id], 'method'=>'post']); !!}
+    <b>Exam Duration:</b> {{$exam->duration}} min
+    <br/>
+    <b>Question Exists:</b>{{$exam->question->count()}}
+
+    {!! Form::open(['route'=>['exams.set-question',$exam->id], 'method'=>'post']); !!}
     <div class="form-row">
         <div class="col-3">
             <label>Class:</label>
@@ -164,13 +167,13 @@
 
             $("#topic").change(function(){
                 let topic_id = $('#topic').val();
-               // alert(topic_id);
+                // alert(topic_id);
                 $.ajax({
                     url:'/questions-banks/number_of_question/'+topic_id,
                     type: 'GET',
                     dataType: 'json',
                     success: function (data) {
-                       // alert(data);
+                        // alert(data);
                         $("#number_of_question").empty();
                         $("#number_of_question").text(data[0]);
                         $('#number_of_no_answer').text(data[1]);

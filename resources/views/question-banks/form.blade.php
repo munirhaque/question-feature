@@ -8,31 +8,30 @@
     <div id="question-form">
         <div class="form-group">
             <label>Question Bank Title:</label>
-            <input type="text" value="{{$question_bank_id}}" class="form-control" name="title" readonly>
+            <input type="text" value="{{$question_bank_id}}" class="form-control col-md-2" name="title" readonly>
         </div>
-        <div class="form-group">
+        {{--<div class="form-group">
             <label>Class:</label>
             <select name="class" class="form-control">
                 @foreach($classes as $class)
                     <option value="{{$class->id}}">{{$class->name}}</option>
                 @endforeach
             </select>
-        </div>
+        </div>--}}
         <div class="form-group">
             <label>Number of Question:</label>
-            {!! Form::number('number_of_question', null,['class'=>'form-control']) !!}
+            {!! Form::number('number_of_question', null,['class'=>'form-control col-md-2']) !!}
         </div>
         <div class="form-group">
             <label>Duration:</label>
-            {!! Form::number('duration', null,['class'=>'form-control']) !!}
+            {!! Form::number('duration', null,['class'=>'form-control col-md-2']) !!}
         </div>
-    </div>
-
-    <div class="form-group">
-        <div class="row">
+        <div class="form-group">
             <button type="submit" class="btn btn-primary"><span><i class="fas fa-save"></i></span>SAVE</button>
         </div>
     </div>
+
+
     {!! Form::close() !!}
 @endsection
 
