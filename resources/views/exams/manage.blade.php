@@ -35,14 +35,4 @@
 
 @endsection
 
-@section('extra-scripts')
-    <script>
-        $(document).ready(function() {
-            $('#example').DataTable();
 
-
-
-
-        });
-    </script>
-@endsection
