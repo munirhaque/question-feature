@@ -36,15 +36,21 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{route('questions-banks.index')}}" class="nav-link">
+                    <a href="{{route('questions-banks.index')}}" class="nav-link {{Route::is('questions-banks.*')?'active':''}}">
                         <span><i class="fas fa-book"></i></span>
                         Question Bank
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{route('exams.index')}}" class="nav-link">
+                    <a href="{{route('exams.index')}}" class="nav-link {{Route::is('exams.*')?'active':''}}">
                         <span><i class="fas fa-book"></i></span>
                         Exams
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{route('student-exams.index')}}" class="nav-link {{Route::is('student-exams.*')?'active':''}}">
+                        <span><i class="fas fa-book"></i></span>
+                     Take Exams
                     </a>
                 </li>
             </ul>

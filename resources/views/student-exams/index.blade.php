@@ -13,29 +13,18 @@
             <th>Category</th>
             <th>Start</th>
             <th>End</th>
-            <th>View Result</th>
-            <th>Question List</th>
-            <th>Manage</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Take Exam</th>
         </tr>
         </thead>
         <tbody>
         @foreach($exams as $exam)
             <tr>
                 <td>{{$loop->iteration}} </td>
-                <td>{{$exam->exam_name}}</td>
-                <td>{{$exam->exam_category->category_name}}</td>
-                <td>{{$exam->starts}}</td>
-                <td>{{$exam->ends}}</td>
-                <td><a href="{{route('exams.result',$exam->id)}}" class="btn btn-primary"><span class="fas fa-file-alt"></span> View Result</a></td>
-                <td><a href="{{route('exams.questions',$exam->id)}}" class="btn btn-primary"><span class="fas fa-file-alt"></span> Question List</a></td>
-                <td><a href="{{route('exams.manage', $exam->id)}}" class="btn btn-primary"><span class="fas fa-cogs"></span> Set Question</a></td>
-                <td><a href="{{route('exams.edit',$exam->id)}}" class="btn btn-primary">
-                        <span><i class="fas fa-edit"></i></span> Edit
-                    </a>
-                </td>
-                <td><a href="#" class="btn btn-danger delete-question" data-toggle="modal" data-target="#delete_exam_modal" data-id="{{$exam->id}}"><span><i class="fas fa-trash-alt"></i></span> DELETE</a></td>
+                <td>{{$exam->exam->exam_name}}</td>
+                <td>{{$exam->exam->exam_category->category_name}}</td>
+                <td>{{$exam->exam->starts}}</td>
+                <td>{{$exam->exam->ends}}</td>
+                <td><a href="{{route('student-exams.questions',$exam->exam->id)}}" class="btn btn-primary {{$exam->student_id == $student->id?'disabled':''}}"><span class="fas fa-file-alt"></span>Take Exam</a></td>
             </tr>
         @endforeach
         </tbody>
@@ -46,11 +35,7 @@
             <th>Category</th>
             <th>Start</th>
             <th>End</th>
-            <th>View Result</th>
-            <th>Question List</th>
-            <th>Manage</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Take Exam</th>
         </tr>
         </tfoot>
     </table>

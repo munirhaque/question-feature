@@ -10,8 +10,13 @@ use App\Models\ExamCategory;
 use App\Models\Exam;
 use App\Models\ClassList;
 use App\Models\ClassQuestion;
-use App\Models\ClassSubject;
+use App\Models\ExamStudent;
 use App\Models\ExamQuestion;
+use App\Models\Option;
+use App\Models\ExamResult;
+use App\Models\Students;
+use Illuminate\Support\Facades\Auth;
+
 
 class ExamsController extends Controller
 {
@@ -20,9 +25,15 @@ class ExamsController extends Controller
     protected $classes;
     protected $exam_questions;
     protected $class_questions;
+    protected $options;
+    protected $exam_results;
+    protected $students;
+    protected $exam_students;
 
     public function __construct(ExamCategory $exam_category, Exam $exam, ClassList $class,
-                                ExamQuestion $exam_question, ClassQuestion $class_question)
+                                ExamQuestion $exam_question, ClassQuestion $class_question,
+                                Option $option, ExamResult $exam_result, Students $student,
+                                ExamStudent $exam_student)
     {
         $this->middleware('auth');
         $this->exam_categories = $exam_category;
@@ -30,6 +41,10 @@ class ExamsController extends Controller
         $this->classes = $class;
         $this->exam_questions = $exam_question;
         $this->class_questions = $class_question;
+        $this->options = $option;
+        $this->exam_results = $exam_result;
+        $this->students = $student;
+        $this->exam_students = $exam_student;
     }
 
     public function index(){
@@ -82,11 +97,8 @@ class ExamsController extends Controller
 
     public function manage($id){
         $exam = $this->exams->find($id);
-       // $class_subjects = $this->class_subjects->where('class_id',$question_bank->class_id)->get();
-        // $question_bank_questions = $this->question_bank_questions->where('question_bank_id', $id)->get();
-        //$question_bank_questions = $this->question_bank_questions->where('question_bank_id', $id)->get();
         $classes = $this->classes->get();
-        return view('exams.manage', compact('exam','classes'));
+        return view('exams.set-question', compact('exam','classes'));
     }
 
     public function setQuestion(StoreExamQuestionRequest $request, $exam_id){
@@ -161,9 +173,81 @@ class ExamsController extends Controller
     }
 
     public function question_list($id){
-        $questions = $this->exam_questions->where('exam_id', $id)->get();
-        return view('exams.question-list',compact('questions'));
+        $questions_set_1 = $this->exam_questions->where('exam_id', $id)->get()->shuffle();
+        $questions_set_2 = $this->exam_questions->where('exam_id', $id)->get()->shuffle();
+        $questions_set_3 = $this->exam_questions->where('exam_id', $id)->get()->shuffle();
+        $questions_set_4 = $this->exam_questions->where('exam_id', $id)->get()->shuffle();
+
+        return view('exams.question-list',compact('questions_set_1','questions_set_2','questions_set_3','questions_set_4'));
 
     }
 
+    public function take_exam(){
+        $student = $this->students->where('user_id',Auth::user()->id)->get()->first();
+        //return $student->id;
+        $exams = $this->exam_students->where('student_id',$student->id)->get();
+        return view('student-exams.index', compact('exams','student'));
+    }
+
+    public function exam_question($id){
+        $questions = $this->exam_questions->where('exam_id', $id)->get();
+        $exam = $this->exams->find($id);
+        $exam_duration = $this->exams->find($id)->pluck('duration');
+        return view('student-exams.questions',compact('questions', 'exam','exam_duration'));
+    }
+
+    public function exam_submit(Request $request,$id){
+        $exam_mark = 0;
+        //$exam_id = $id;
+        //$submited_answers = array_merge_recursive($request->answer);
+        $questions = $this->exam_questions->where('exam_id', $id)->get();
+        /*if (!isset($request->qqq)){
+            return 'No';
+        }*/
+        foreach ($questions as $question){
+            $key = 'question_'.$question->question_id;
+            $correct_answer = $this->options->where('question_id',$question->question_id)->where('is_answer',1)->pluck('id')->toArray();
+            //echo count($correct_answer);
+            if (count($correct_answer) == 0 && !isset($request->$key)){
+               // echo $key.':Correct';
+                $exam_mark = $exam_mark + 1;
+            }elseif(isset($request->$key)){
+                if ($correct_answer == $request->$key){
+                    $exam_mark = $exam_mark + 1;
+                   // echo $key."Correct";
+                }
+            }
+
+
+        }
+        //return $request;
+        // return gettype($request);
+
+       /* $questions = $this->exam_questions->where('exam_id', $id)->get();
+        $answers = $request->answer;
+        $correct_option = [];
+        $exam_mark = 0;
+        foreach ($answers as $answer){
+            $ans = explode(':',$answer);
+            $question_id = $ans[0];
+            $given_answer = $ans[1];
+            $correct_option_id = $this->options->where('question_id',$question_id)->where('is_answer',1)->pluck('id')[0];
+            if ($given_answer == $correct_option_id){
+                //echo "Answer: Correct";
+                $exam_mark = $exam_mark + 1;
+            }
+        }*/
+        $exam_result = $this->exam_results;
+        $exam_result->exam_id = $id;
+        $exam_result->student_id = Auth::user()->id;
+        $exam_result->mark = $exam_mark;
+        $exam_result->save();
+
+        return redirect(route('student-exams.index'))->with('success',['Success'=>'You successfully Complete Exam']);
+    }
+
+    public function exam_result($id){
+        $exameens = $this->exam_results->where('exam_id', $id)->get();
+        return view('exams.view-result', compact('exameens'));
+    }
 }
