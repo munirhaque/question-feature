@@ -15,6 +15,10 @@ use App\Models\ExamQuestion;
 use App\Models\Option;
 use App\Models\ExamResult;
 use App\Models\Students;
+use App\Models\Group;
+use App\Models\ExamGroup;
+use App\Models\Section;
+use App\Models\ExamSection;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -29,11 +33,16 @@ class ExamsController extends Controller
     protected $exam_results;
     protected $students;
     protected $exam_students;
+    protected $groups;
+    protected $sections;
+    protected $exam_groups;
+    protected $exam_sections;
 
     public function __construct(ExamCategory $exam_category, Exam $exam, ClassList $class,
                                 ExamQuestion $exam_question, ClassQuestion $class_question,
                                 Option $option, ExamResult $exam_result, Students $student,
-                                ExamStudent $exam_student)
+                                ExamStudent $exam_student, Group $group, Section $section,
+                                ExamGroup $exam_group, ExamSection $exam_section)
     {
         $this->middleware('auth');
         $this->exam_categories = $exam_category;
@@ -45,6 +54,10 @@ class ExamsController extends Controller
         $this->exam_results = $exam_result;
         $this->students = $student;
         $this->exam_students = $exam_student;
+        $this->groups = $group;
+        $this->sections = $section;
+        $this->exam_groups =$exam_group;
+        $this->exam_sections = $exam_section;
     }
 
     public function index(){
@@ -95,7 +108,7 @@ class ExamsController extends Controller
         return redirect(route('exams.index'))->with('success',['Success'=>'Exam Removed Successfully']);
     }
 
-    public function manage($id){
+    public function manage_question($id){
         $exam = $this->exams->find($id);
         $classes = $this->classes->get();
         return view('exams.set-question', compact('exam','classes'));
@@ -146,7 +159,7 @@ class ExamsController extends Controller
 
         $exam_questions = $this->exam_questions->where('exam_id',$exam_id)->pluck('question_id')->toArray();
         if(($exam->number_of_question - count($exam_questions)) ===0){
-            return redirect(route('exams.manage',$exam_id))->with('error',['Error'=>'Exam Question Limit Exceed']);
+            return redirect(route('exams.manage-question',$exam_id))->with('error',['Error'=>'Exam Question Limit Exceed']);
         }
 
         $selected_questions = [];
@@ -159,7 +172,7 @@ class ExamsController extends Controller
             return redirect(route('questions-banks.manage',$question_bank_id))->with('success',['Success'=>'Topic Already Exists into  Question Bank']);
         }*/
         if (count($selected_questions) === 0){
-            return redirect(route('exams.manage',$exam_id))->with('error',['Error'=>'Questions of this topic Already Added to Question Bank']);
+            return redirect(route('exams.manage-question',$exam_id))->with('error',['Error'=>'Questions of this topic Already Added to Question Bank']);
         }else{
             shuffle($selected_questions);
             $selected_questions =array_slice($selected_questions, 0,$number_of_questions);
@@ -167,7 +180,7 @@ class ExamsController extends Controller
             foreach ($selected_questions as $question){
                 ExamQuestion::create(['exam_id'=>$exam_id, 'question_id'=>$question]);
             }
-            return redirect(route('exams.manage',$exam_id))->with('success',['Success'=>'Questions Added to Exam']);
+            return redirect(route('exams.manage-question',$exam_id))->with('success',['Success'=>'Questions Added to Exam']);
         }
 
     }
@@ -249,5 +262,30 @@ class ExamsController extends Controller
     public function exam_result($id){
         $exameens = $this->exam_results->where('exam_id', $id)->get();
         return view('exams.view-result', compact('exameens'));
+    }
+
+    public function manage($exam_id){
+        $groups = $this->groups->get();
+        $sections = $this->sections->get();
+        $exam = $this->exams->find($exam_id);
+
+        return view('exams.manage',compact('groups','sections','exam'));
+    }
+
+    public function save_manage(Request $request, $exam_id){
+        //$group_id = $request->group;
+        $section_id = $request->section;
+
+        $group = $this->exam_groups;
+        $group->exam_id = $exam_id;
+        $group->group_id = $request->group;
+        $group->save();
+
+        $section = $this->exam_sections;
+        $section->exam_id = $exam_id;
+        $section->section_id = $request->section;
+        $section->save();
+        return redirect(route('exams.index'))->with('success',['Success'=>'Exam Managed Successfully']);
+
     }
 }

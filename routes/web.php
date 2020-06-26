@@ -55,6 +55,8 @@ Route::get('/exams/edit/{id}','ExamsController@edit')->name('exams.edit');
 Route::put('/exams/update/{id}','ExamsController@update')->name('exams.update');
 Route::delete('/exams/remove/','ExamsController@destroy')->name('exams.remove');
 Route::get('/exams/manage/{id}','ExamsController@manage')->name('exams.manage');
+Route::get('/exams/manage-question/{id}','ExamsController@manage_question')->name('exams.manage-question');
+Route::post('/exams/save-manage/{id}','ExamsController@save_manage')->name('exams.save-manage');
 Route::post('/exams/set-question/{id}','ExamsController@setQuestion')->name('exams.set-question');
 Route::get('/exams/questions/{id}', 'ExamsController@question_list')->name('exams.questions');
 Route::get('/exams/result/{id}','ExamsController@exam_result')->name('exams.result');

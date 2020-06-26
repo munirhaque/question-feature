@@ -15,6 +15,7 @@
             <th>End</th>
             <th>View Result</th>
             <th>Question List</th>
+            <th>Set Question</th>
             <th>Manage</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -30,7 +31,8 @@
                 <td>{{$exam->ends}}</td>
                 <td><a href="{{route('exams.result',$exam->id)}}" class="btn btn-primary"><span class="fas fa-file-alt"></span> View Result</a></td>
                 <td><a href="{{route('exams.questions',$exam->id)}}" class="btn btn-primary"><span class="fas fa-file-alt"></span> Question List</a></td>
-                <td><a href="{{route('exams.manage', $exam->id)}}" class="btn btn-primary"><span class="fas fa-cogs"></span> Set Question</a></td>
+                <td><a href="{{route('exams.manage-question', $exam->id)}}" class="btn btn-primary"><span class="fas fa-bars"></span> Set Question</a></td>
+                <td><a href="{{route('exams.manage', $exam->id)}}" class="btn btn-primary"><span class="fas fa-cogs"></span> Manage</a></td>
                 <td><a href="{{route('exams.edit',$exam->id)}}" class="btn btn-primary">
                         <span><i class="fas fa-edit"></i></span> Edit
                     </a>
@@ -48,6 +50,7 @@
             <th>End</th>
             <th>View Result</th>
             <th>Question List</th>
+            <th>Set Question</th>
             <th>Manage</th>
             <th>Edit</th>
             <th>Delete</th>
